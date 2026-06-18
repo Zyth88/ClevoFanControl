@@ -38,6 +38,9 @@ namespace ClevoFanControl {
             this.mnuProfileManual = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfileDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfile50 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuProfile30 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuProfile60 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuProfile70 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfileMax = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +80,9 @@ namespace ClevoFanControl {
             this.lblFanCurveHeader = new System.Windows.Forms.Label();
             this.pnlProfiles = new System.Windows.Forms.Panel();
             this.btnProfile50 = new System.Windows.Forms.RadioButton();
+            this.btnProfile30 = new System.Windows.Forms.RadioButton();
+            this.btnProfile60 = new System.Windows.Forms.RadioButton();
+            this.btnProfile70 = new System.Windows.Forms.RadioButton();
             this.btnProfileMax = new System.Windows.Forms.RadioButton();
             this.btnProfileManual = new System.Windows.Forms.RadioButton();
             this.btnProfileDefault = new System.Windows.Forms.RadioButton();
@@ -85,12 +91,6 @@ namespace ClevoFanControl {
             this.btnAlwaysOnTop = new System.Windows.Forms.CheckBox();
             this.btnACFans = new System.Windows.Forms.CheckBox();
             this.tipTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.lblCpuSafetyTemp = new System.Windows.Forms.Label();
-            this.lblCpuSafetyTemp2 = new System.Windows.Forms.Label();
-            this.txtCpuSafetyTemp = new System.Windows.Forms.NumericUpDown();
-            this.txtGpuSafetyTemp = new System.Windows.Forms.NumericUpDown();
-            this.lblGpuSafetyTemp2 = new System.Windows.Forms.Label();
-            this.lblGpuSafetyTemp = new System.Windows.Forms.Label();
             this.btnGpuBattMonitor = new System.Windows.Forms.CheckBox();
             this.tmrGui = new System.Windows.Forms.Timer(this.components);
             this.btnManualOnBatt = new System.Windows.Forms.CheckBox();
@@ -113,8 +113,6 @@ namespace ClevoFanControl {
             this.tabGpuSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trkGpuPower)).BeginInit();
             this.pnlProfiles.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtCpuSafetyTemp)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGpuSafetyTemp)).BeginInit();
             this.SuspendLayout();
             // 
             // lblCPUHeader
@@ -188,13 +186,16 @@ namespace ClevoFanControl {
             this.mnuSeparator1,
             this.mnuProfileManual,
             this.mnuProfileDefault,
+            this.mnuProfile30,
             this.mnuProfile50,
+            this.mnuProfile60,
+            this.mnuProfile70,
             this.mnuProfileMax,
             this.mnuSeparator2,
             this.mnuAbout,
             this.mnuExit});
             this.mnuMain.Name = "mnuMain";
-            this.mnuMain.Size = new System.Drawing.Size(182, 170);
+            this.mnuMain.Size = new System.Drawing.Size(182, 200);
             // 
             // mnuShowWindow
             // 
@@ -228,6 +229,27 @@ namespace ClevoFanControl {
             this.mnuProfile50.Size = new System.Drawing.Size(181, 22);
             this.mnuProfile50.Text = "50% Speed Profile";
             this.mnuProfile50.Click += new System.EventHandler(this.mnuProfile50_Click);
+            // 
+            // mnuProfile30
+            // 
+            this.mnuProfile30.Name = "mnuProfile30";
+            this.mnuProfile30.Size = new System.Drawing.Size(181, 22);
+            this.mnuProfile30.Text = "30% Speed Profile";
+            this.mnuProfile30.Click += new System.EventHandler(this.mnuProfile30_Click);
+            // 
+            // mnuProfile60
+            // 
+            this.mnuProfile60.Name = "mnuProfile60";
+            this.mnuProfile60.Size = new System.Drawing.Size(181, 22);
+            this.mnuProfile60.Text = "60% Speed Profile";
+            this.mnuProfile60.Click += new System.EventHandler(this.mnuProfile60_Click);
+            // 
+            // mnuProfile70
+            // 
+            this.mnuProfile70.Name = "mnuProfile70";
+            this.mnuProfile70.Size = new System.Drawing.Size(181, 22);
+            this.mnuProfile70.Text = "70% Speed Profile";
+            this.mnuProfile70.Click += new System.EventHandler(this.mnuProfile70_Click);
             // 
             // mnuProfileMax
             // 
@@ -669,6 +691,9 @@ namespace ClevoFanControl {
             // pnlProfiles
             // 
             this.pnlProfiles.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlProfiles.Controls.Add(this.btnProfile70);
+            this.pnlProfiles.Controls.Add(this.btnProfile60);
+            this.pnlProfiles.Controls.Add(this.btnProfile30);
             this.pnlProfiles.Controls.Add(this.btnProfile50);
             this.pnlProfiles.Controls.Add(this.btnProfileMax);
             this.pnlProfiles.Controls.Add(this.btnProfileManual);
@@ -676,15 +701,15 @@ namespace ClevoFanControl {
             this.pnlProfiles.Controls.Add(this.lblProfilesHeader);
             this.pnlProfiles.Location = new System.Drawing.Point(12, 148);
             this.pnlProfiles.Name = "pnlProfiles";
-            this.pnlProfiles.Size = new System.Drawing.Size(579, 45);
+            this.pnlProfiles.Size = new System.Drawing.Size(579, 60);
             this.pnlProfiles.TabIndex = 13;
             // 
             // btnProfile50
             // 
             this.btnProfile50.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnProfile50.Location = new System.Drawing.Point(323, 6);
+            this.btnProfile50.Location = new System.Drawing.Point(281, 18);
             this.btnProfile50.Name = "btnProfile50";
-            this.btnProfile50.Size = new System.Drawing.Size(120, 30);
+            this.btnProfile50.Size = new System.Drawing.Size(72, 30);
             this.btnProfile50.TabIndex = 5;
             this.btnProfile50.Text = "50% Speed";
             this.btnProfile50.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -694,11 +719,11 @@ namespace ClevoFanControl {
             // btnProfileMax
             // 
             this.btnProfileMax.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnProfileMax.Location = new System.Drawing.Point(449, 6);
+            this.btnProfileMax.Location = new System.Drawing.Point(497, 18);
             this.btnProfileMax.Name = "btnProfileMax";
-            this.btnProfileMax.Size = new System.Drawing.Size(120, 30);
+            this.btnProfileMax.Size = new System.Drawing.Size(72, 30);
             this.btnProfileMax.TabIndex = 4;
-            this.btnProfileMax.Text = "Maximum";
+            this.btnProfileMax.Text = "100%";
             this.btnProfileMax.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnProfileMax.UseVisualStyleBackColor = true;
             this.btnProfileMax.CheckedChanged += new System.EventHandler(this.btnProfileMax_CheckedChanged);
@@ -707,9 +732,9 @@ namespace ClevoFanControl {
             // 
             this.btnProfileManual.Appearance = System.Windows.Forms.Appearance.Button;
             this.btnProfileManual.Checked = true;
-            this.btnProfileManual.Location = new System.Drawing.Point(71, 6);
+            this.btnProfileManual.Location = new System.Drawing.Point(65, 18);
             this.btnProfileManual.Name = "btnProfileManual";
-            this.btnProfileManual.Size = new System.Drawing.Size(120, 30);
+            this.btnProfileManual.Size = new System.Drawing.Size(72, 30);
             this.btnProfileManual.TabIndex = 3;
             this.btnProfileManual.TabStop = true;
             this.btnProfileManual.Text = "Manual";
@@ -720,14 +745,50 @@ namespace ClevoFanControl {
             // btnProfileDefault
             // 
             this.btnProfileDefault.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnProfileDefault.Location = new System.Drawing.Point(197, 6);
+            this.btnProfileDefault.Location = new System.Drawing.Point(137, 18);
             this.btnProfileDefault.Name = "btnProfileDefault";
-            this.btnProfileDefault.Size = new System.Drawing.Size(120, 30);
+            this.btnProfileDefault.Size = new System.Drawing.Size(72, 30);
             this.btnProfileDefault.TabIndex = 2;
             this.btnProfileDefault.Text = "Clevo Default";
             this.btnProfileDefault.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnProfileDefault.UseVisualStyleBackColor = true;
             this.btnProfileDefault.CheckedChanged += new System.EventHandler(this.btnProfileDefault_CheckedChanged);
+            // 
+            // btnProfile30
+            // 
+            this.btnProfile30.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnProfile30.Location = new System.Drawing.Point(209, 18);
+            this.btnProfile30.Name = "btnProfile30";
+            this.btnProfile30.Size = new System.Drawing.Size(72, 30);
+            this.btnProfile30.TabIndex = 6;
+            this.btnProfile30.Text = "30% Speed";
+            this.btnProfile30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnProfile30.UseVisualStyleBackColor = true;
+            this.btnProfile30.CheckedChanged += new System.EventHandler(this.btnProfile30_CheckedChanged);
+            // 
+            // btnProfile60
+            // 
+            this.btnProfile60.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnProfile60.Location = new System.Drawing.Point(353, 18);
+            this.btnProfile60.Name = "btnProfile60";
+            this.btnProfile60.Size = new System.Drawing.Size(72, 30);
+            this.btnProfile60.TabIndex = 7;
+            this.btnProfile60.Text = "60% Speed";
+            this.btnProfile60.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnProfile60.UseVisualStyleBackColor = true;
+            this.btnProfile60.CheckedChanged += new System.EventHandler(this.btnProfile60_CheckedChanged);
+            // 
+            // btnProfile70
+            // 
+            this.btnProfile70.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnProfile70.Location = new System.Drawing.Point(425, 18);
+            this.btnProfile70.Name = "btnProfile70";
+            this.btnProfile70.Size = new System.Drawing.Size(72, 30);
+            this.btnProfile70.TabIndex = 8;
+            this.btnProfile70.Text = "70% Speed";
+            this.btnProfile70.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnProfile70.UseVisualStyleBackColor = true;
+            this.btnProfile70.CheckedChanged += new System.EventHandler(this.btnProfile70_CheckedChanged);
             // 
             // lblProfilesHeader
             // 
@@ -778,78 +839,6 @@ namespace ClevoFanControl {
             this.btnACFans.Text = "Min 30% on AC";
             this.btnACFans.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnACFans.UseVisualStyleBackColor = true;
-            // 
-            // lblCpuSafetyTemp
-            // 
-            this.lblCpuSafetyTemp.AutoSize = true;
-            this.lblCpuSafetyTemp.Location = new System.Drawing.Point(12, 568);
-            this.lblCpuSafetyTemp.Name = "lblCpuSafetyTemp";
-            this.lblCpuSafetyTemp.Size = new System.Drawing.Size(127, 20);
-            this.lblCpuSafetyTemp.TabIndex = 17;
-            this.lblCpuSafetyTemp.Text = "CPU safety temp:";
-            // 
-            // lblCpuSafetyTemp2
-            // 
-            this.lblCpuSafetyTemp2.AutoSize = true;
-            this.lblCpuSafetyTemp2.Location = new System.Drawing.Point(180, 568);
-            this.lblCpuSafetyTemp2.Name = "lblCpuSafetyTemp2";
-            this.lblCpuSafetyTemp2.Size = new System.Drawing.Size(15, 20);
-            this.lblCpuSafetyTemp2.TabIndex = 20;
-            this.lblCpuSafetyTemp2.Text = "°";
-            // 
-            // txtCpuSafetyTemp
-            // 
-            this.txtCpuSafetyTemp.Location = new System.Drawing.Point(137, 566);
-            this.txtCpuSafetyTemp.Minimum = new decimal(new int[] {
-            80,
-            0,
-            0,
-            0});
-            this.txtCpuSafetyTemp.Name = "txtCpuSafetyTemp";
-            this.txtCpuSafetyTemp.Size = new System.Drawing.Size(45, 28);
-            this.txtCpuSafetyTemp.TabIndex = 21;
-            this.txtCpuSafetyTemp.Value = new decimal(new int[] {
-            90,
-            0,
-            0,
-            0});
-            this.txtCpuSafetyTemp.ValueChanged += new System.EventHandler(this.txtCpuSafetyTemp_ValueChanged);
-            // 
-            // txtGpuSafetyTemp
-            // 
-            this.txtGpuSafetyTemp.Location = new System.Drawing.Point(330, 566);
-            this.txtGpuSafetyTemp.Minimum = new decimal(new int[] {
-            80,
-            0,
-            0,
-            0});
-            this.txtGpuSafetyTemp.Name = "txtGpuSafetyTemp";
-            this.txtGpuSafetyTemp.Size = new System.Drawing.Size(45, 28);
-            this.txtGpuSafetyTemp.TabIndex = 24;
-            this.txtGpuSafetyTemp.Value = new decimal(new int[] {
-            90,
-            0,
-            0,
-            0});
-            this.txtGpuSafetyTemp.ValueChanged += new System.EventHandler(this.txtGpuSafetyTemp_ValueChanged);
-            // 
-            // lblGpuSafetyTemp2
-            // 
-            this.lblGpuSafetyTemp2.AutoSize = true;
-            this.lblGpuSafetyTemp2.Location = new System.Drawing.Point(373, 568);
-            this.lblGpuSafetyTemp2.Name = "lblGpuSafetyTemp2";
-            this.lblGpuSafetyTemp2.Size = new System.Drawing.Size(15, 20);
-            this.lblGpuSafetyTemp2.TabIndex = 23;
-            this.lblGpuSafetyTemp2.Text = "°";
-            // 
-            // lblGpuSafetyTemp
-            // 
-            this.lblGpuSafetyTemp.AutoSize = true;
-            this.lblGpuSafetyTemp.Location = new System.Drawing.Point(205, 568);
-            this.lblGpuSafetyTemp.Name = "lblGpuSafetyTemp";
-            this.lblGpuSafetyTemp.Size = new System.Drawing.Size(129, 20);
-            this.lblGpuSafetyTemp.TabIndex = 22;
-            this.lblGpuSafetyTemp.Text = "GPU safety temp:";
             // 
             // btnGpuBattMonitor
             // 
@@ -955,8 +944,6 @@ namespace ClevoFanControl {
             ((System.ComponentModel.ISupportInitialize)(this.trkGpuPower)).EndInit();
             this.pnlProfiles.ResumeLayout(false);
             this.pnlProfiles.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtCpuSafetyTemp)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGpuSafetyTemp)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1020,7 +1007,13 @@ namespace ClevoFanControl {
         private System.Windows.Forms.Label lblGpuSafetyTemp;
         private System.Windows.Forms.CheckBox btnGpuBattMonitor;
         private System.Windows.Forms.RadioButton btnProfile50;
+        private System.Windows.Forms.RadioButton btnProfile30;
+        private System.Windows.Forms.RadioButton btnProfile60;
+        private System.Windows.Forms.RadioButton btnProfile70;
         private System.Windows.Forms.ToolStripMenuItem mnuProfile50;
+        private System.Windows.Forms.ToolStripMenuItem mnuProfile30;
+        private System.Windows.Forms.ToolStripMenuItem mnuProfile60;
+        private System.Windows.Forms.ToolStripMenuItem mnuProfile70;
         private CurveEditorControl.PlotCanvasContainer cpuPlot;
         private CurveEditorControl.PlotCanvasContainer gpuPlot;
         private System.Windows.Forms.Timer tmrGui;

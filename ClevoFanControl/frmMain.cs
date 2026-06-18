@@ -49,14 +49,14 @@ namespace ClevoFanControl {
         int cpuSameTempTicks = 0;
         int gpuSameTempTicks = 0;
 
-        int cpuSafetyTemp = 90;
-        int gpuSafetyTemp = 85;
-
         FanTable defaultCpuFanTable;
         FanTable defaultGpuFanTable;
 
         FanTable maxFanTable;
         FanTable halfFanTable;
+        FanTable thirtyFanTable;
+        FanTable sixtyFanTable;
+        FanTable seventyFanTable;
 
         FanTable userCpuFanTable;
         FanTable userGpuFanTable;
@@ -125,6 +125,39 @@ namespace ClevoFanControl {
             halfFanTable.Fan80 = 50;
             halfFanTable.Fan85 = 50;
 
+            thirtyFanTable.Fan40 = 30;
+            thirtyFanTable.Fan45 = 30;
+            thirtyFanTable.Fan50 = 30;
+            thirtyFanTable.Fan55 = 30;
+            thirtyFanTable.Fan60 = 30;
+            thirtyFanTable.Fan65 = 30;
+            thirtyFanTable.Fan70 = 30;
+            thirtyFanTable.Fan75 = 30;
+            thirtyFanTable.Fan80 = 30;
+            thirtyFanTable.Fan85 = 30;
+
+            sixtyFanTable.Fan40 = 60;
+            sixtyFanTable.Fan45 = 60;
+            sixtyFanTable.Fan50 = 60;
+            sixtyFanTable.Fan55 = 60;
+            sixtyFanTable.Fan60 = 60;
+            sixtyFanTable.Fan65 = 60;
+            sixtyFanTable.Fan70 = 60;
+            sixtyFanTable.Fan75 = 60;
+            sixtyFanTable.Fan80 = 60;
+            sixtyFanTable.Fan85 = 60;
+
+            seventyFanTable.Fan40 = 70;
+            seventyFanTable.Fan45 = 70;
+            seventyFanTable.Fan50 = 70;
+            seventyFanTable.Fan55 = 70;
+            seventyFanTable.Fan60 = 70;
+            seventyFanTable.Fan65 = 70;
+            seventyFanTable.Fan70 = 70;
+            seventyFanTable.Fan75 = 70;
+            seventyFanTable.Fan80 = 70;
+            seventyFanTable.Fan85 = 70;
+
             defaultCpuFanTable.Fan40 = 40;
             defaultCpuFanTable.Fan45 = 40;
             defaultCpuFanTable.Fan50 = 40;
@@ -189,12 +222,6 @@ namespace ClevoFanControl {
             // --- Compute continuous target fan speeds ---
             int computedCpuFan = GetInterpolatedFanSpeed("CPU", currentCpuTemp);
             int computedGpuFan = GetInterpolatedFanSpeed("GPU", currentGpuTemp);
-
-            // --- Enforce safety limits ---
-            if (currentCpuTemp >= cpuSafetyTemp || currentGpuTemp >= gpuSafetyTemp) {
-                computedCpuFan = 100;
-                computedGpuFan = 100;
-            }
 
             // --- Enforce "min 30% on AC" ---
             if (btnACFans.Checked && SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
@@ -571,18 +598,6 @@ namespace ClevoFanControl {
                     lblGPUTemp.Font = new Font("Open Sans", 24);
                 }
 
-                // Update safety indicator labels.
-                if (currentCpuTemp >= cpuSafetyTemp)
-                    lblCpuSafetyTemp.ForeColor = Color.Red;
-                else
-                    lblCpuSafetyTemp.ForeColor = Color.Black;
-
-                if (currentGpuTemp >= gpuSafetyTemp)
-                    lblGpuSafetyTemp.ForeColor = Color.Red;
-                else
-                    lblGpuSafetyTemp.ForeColor = Color.Black;
-            }
-
             // Update the tray tooltip with current values.
             string tooltip =
                 "CPU\n" +
@@ -593,6 +608,7 @@ namespace ClevoFanControl {
                     ? "  Temp: " + currentGpuTemp + "°\n" + "  Fan: " + prevFanGPUPercentage + "%"
                     : "  Asleep");
             icoTray.Text = tooltip;
+            }
         }
 
         private void SetSliderValuesFromTable() {
@@ -747,10 +763,6 @@ namespace ClevoFanControl {
 
                     btnAlwaysOnTop.Checked = Convert.ToBoolean(sw.ReadLine());
                     btnACFans.Checked = Convert.ToBoolean(sw.ReadLine());
-                    txtCpuSafetyTemp.Value = Convert.ToInt32(sw.ReadLine());
-                    cpuSafetyTemp = Convert.ToInt32(txtCpuSafetyTemp.Value);
-                    txtGpuSafetyTemp.Value = Convert.ToInt32(sw.ReadLine());
-                    gpuSafetyTemp = Convert.ToInt32(txtGpuSafetyTemp.Value);
                     btnGpuBattMonitor.Checked = Convert.ToBoolean(sw.ReadLine());
                     trkGpuPower.Value = Convert.ToInt32(sw.ReadLine());
                     lblGpuPowerLimit.Text = trkGpuPower.Value.ToString();
@@ -823,8 +835,6 @@ namespace ClevoFanControl {
 
                 sw.WriteLine(btnAlwaysOnTop.Checked);
                 sw.WriteLine(btnACFans.Checked);
-                sw.WriteLine(txtCpuSafetyTemp.Value.ToString());
-                sw.WriteLine(txtGpuSafetyTemp.Value.ToString());
                 sw.WriteLine(btnGpuBattMonitor.Checked);
                 sw.WriteLine(trkGpuPower.Value);
                 sw.WriteLine(btnManualOnBatt.Checked);
@@ -987,6 +997,9 @@ namespace ClevoFanControl {
                 mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = false;
                 clevoAutoFans = false;
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     lastOnlineProfile = "1";
@@ -1008,6 +1021,9 @@ namespace ClevoFanControl {
                 mnuProfileDefault.Checked = true;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = false;
                 clevoAutoFans = true;
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     lastOnlineProfile = "2";
@@ -1025,6 +1041,9 @@ namespace ClevoFanControl {
                 mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = true;
                 mnuProfile50.Checked = false;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = false;
                 clevoAutoFans = false;
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     lastOnlineProfile = "3";
@@ -1042,9 +1061,72 @@ namespace ClevoFanControl {
                 mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = true;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = false;
                 clevoAutoFans = false;
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     lastOnlineProfile = "4";
+                }
+                profileSwitchOverride = true;
+            }
+        }
+
+        private void btnProfile30_CheckedChanged(object sender, EventArgs e) {
+            if (btnProfile30.Checked) {
+                cpuFanTable = thirtyFanTable;
+                gpuFanTable = thirtyFanTable;
+                //tabFanCurves.Enabled = false;
+                mnuProfileManual.Checked = false;
+                mnuProfileDefault.Checked = false;
+                mnuProfileMax.Checked = false;
+                mnuProfile50.Checked = false;
+                mnuProfile30.Checked = true;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = false;
+                clevoAutoFans = false;
+                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
+                    lastOnlineProfile = "5";
+                }
+                profileSwitchOverride = true;
+            }
+        }
+
+        private void btnProfile60_CheckedChanged(object sender, EventArgs e) {
+            if (btnProfile60.Checked) {
+                cpuFanTable = sixtyFanTable;
+                gpuFanTable = sixtyFanTable;
+                //tabFanCurves.Enabled = false;
+                mnuProfileManual.Checked = false;
+                mnuProfileDefault.Checked = false;
+                mnuProfileMax.Checked = false;
+                mnuProfile50.Checked = false;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = true;
+                mnuProfile70.Checked = false;
+                clevoAutoFans = false;
+                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
+                    lastOnlineProfile = "6";
+                }
+                profileSwitchOverride = true;
+            }
+        }
+
+        private void btnProfile70_CheckedChanged(object sender, EventArgs e) {
+            if (btnProfile70.Checked) {
+                cpuFanTable = seventyFanTable;
+                gpuFanTable = seventyFanTable;
+                //tabFanCurves.Enabled = false;
+                mnuProfileManual.Checked = false;
+                mnuProfileDefault.Checked = false;
+                mnuProfileMax.Checked = false;
+                mnuProfile50.Checked = false;
+                mnuProfile30.Checked = false;
+                mnuProfile60.Checked = false;
+                mnuProfile70.Checked = true;
+                clevoAutoFans = false;
+                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
+                    lastOnlineProfile = "7";
                 }
                 profileSwitchOverride = true;
             }
@@ -1064,6 +1146,18 @@ namespace ClevoFanControl {
         }
         private void mnuProfile50_Click(object sender, EventArgs e) {
             btnProfile50.Checked = true;
+        }
+
+        private void mnuProfile30_Click(object sender, EventArgs e) {
+            btnProfile30.Checked = true;
+        }
+
+        private void mnuProfile60_Click(object sender, EventArgs e) {
+            btnProfile60.Checked = true;
+        }
+
+        private void mnuProfile70_Click(object sender, EventArgs e) {
+            btnProfile70.Checked = true;
         }
 
 
@@ -1097,14 +1191,6 @@ namespace ClevoFanControl {
 
         private void tmrHighCpuDelay_Tick(object sender, EventArgs e) {
             highCpuDelayFinished = true;
-        }
-
-        private void txtCpuSafetyTemp_ValueChanged(object sender, EventArgs e) {
-            cpuSafetyTemp = Convert.ToInt32(txtCpuSafetyTemp.Value);
-        }
-
-        private void txtGpuSafetyTemp_ValueChanged(object sender, EventArgs e) {
-            gpuSafetyTemp = Convert.ToInt32(txtGpuSafetyTemp.Value);
         }
 
         private void btnGpuBattMonitor_CheckedChanged(object sender, EventArgs e) {
