@@ -36,7 +36,6 @@ namespace ClevoFanControl {
             this.mnuShowWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuProfileManual = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuProfileDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfile50 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfile30 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuProfile60 = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +84,6 @@ namespace ClevoFanControl {
             this.btnProfile70 = new System.Windows.Forms.RadioButton();
             this.btnProfileMax = new System.Windows.Forms.RadioButton();
             this.btnProfileManual = new System.Windows.Forms.RadioButton();
-            this.btnProfileDefault = new System.Windows.Forms.RadioButton();
             this.lblProfilesHeader = new System.Windows.Forms.Label();
             this.btnExit = new System.Windows.Forms.Button();
             this.btnAlwaysOnTop = new System.Windows.Forms.CheckBox();
@@ -185,7 +183,6 @@ namespace ClevoFanControl {
             this.mnuShowWindow,
             this.mnuSeparator1,
             this.mnuProfileManual,
-            this.mnuProfileDefault,
             this.mnuProfile30,
             this.mnuProfile50,
             this.mnuProfile60,
@@ -215,13 +212,6 @@ namespace ClevoFanControl {
             this.mnuProfileManual.Size = new System.Drawing.Size(181, 22);
             this.mnuProfileManual.Text = "Manual Profile";
             this.mnuProfileManual.Click += new System.EventHandler(this.mnuProfileManual_Click);
-            // 
-            // mnuProfileDefault
-            // 
-            this.mnuProfileDefault.Name = "mnuProfileDefault";
-            this.mnuProfileDefault.Size = new System.Drawing.Size(181, 22);
-            this.mnuProfileDefault.Text = "Clevo Default Profile";
-            this.mnuProfileDefault.Click += new System.EventHandler(this.mnuProfileDefault_Click);
             // 
             // mnuProfile50
             // 
@@ -697,7 +687,6 @@ namespace ClevoFanControl {
             this.pnlProfiles.Controls.Add(this.btnProfile50);
             this.pnlProfiles.Controls.Add(this.btnProfileMax);
             this.pnlProfiles.Controls.Add(this.btnProfileManual);
-            this.pnlProfiles.Controls.Add(this.btnProfileDefault);
             this.pnlProfiles.Controls.Add(this.lblProfilesHeader);
             this.pnlProfiles.Location = new System.Drawing.Point(12, 148);
             this.pnlProfiles.Name = "pnlProfiles";
@@ -741,18 +730,6 @@ namespace ClevoFanControl {
             this.btnProfileManual.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnProfileManual.UseVisualStyleBackColor = true;
             this.btnProfileManual.CheckedChanged += new System.EventHandler(this.btnProfileManual_CheckedChanged);
-            // 
-            // btnProfileDefault
-            // 
-            this.btnProfileDefault.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnProfileDefault.Location = new System.Drawing.Point(137, 18);
-            this.btnProfileDefault.Name = "btnProfileDefault";
-            this.btnProfileDefault.Size = new System.Drawing.Size(72, 30);
-            this.btnProfileDefault.TabIndex = 2;
-            this.btnProfileDefault.Text = "Clevo Default";
-            this.btnProfileDefault.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.btnProfileDefault.UseVisualStyleBackColor = true;
-            this.btnProfileDefault.CheckedChanged += new System.EventHandler(this.btnProfileDefault_CheckedChanged);
             // 
             // btnProfile30
             // 
@@ -985,12 +962,10 @@ namespace ClevoFanControl {
         private System.Windows.Forms.PictureBox imgStatFan;
         private System.Windows.Forms.Panel pnlProfiles;
         private System.Windows.Forms.RadioButton btnProfileManual;
-        private System.Windows.Forms.RadioButton btnProfileDefault;
         private System.Windows.Forms.Label lblProfilesHeader;
         private System.Windows.Forms.RadioButton btnProfileMax;
         private System.Windows.Forms.ToolStripSeparator mnuSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mnuProfileManual;
-        private System.Windows.Forms.ToolStripMenuItem mnuProfileDefault;
         private System.Windows.Forms.ToolStripMenuItem mnuProfileMax;
         private System.Windows.Forms.ToolStripSeparator mnuSeparator2;
         private System.Windows.Forms.Button btnExit;

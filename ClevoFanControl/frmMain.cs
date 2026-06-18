@@ -49,9 +49,6 @@ namespace ClevoFanControl {
         int cpuSameTempTicks = 0;
         int gpuSameTempTicks = 0;
 
-        FanTable defaultCpuFanTable;
-        FanTable defaultGpuFanTable;
-
         FanTable maxFanTable;
         FanTable halfFanTable;
         FanTable thirtyFanTable;
@@ -158,30 +155,8 @@ namespace ClevoFanControl {
             seventyFanTable.Fan80 = 70;
             seventyFanTable.Fan85 = 70;
 
-            defaultCpuFanTable.Fan40 = 40;
-            defaultCpuFanTable.Fan45 = 40;
-            defaultCpuFanTable.Fan50 = 40;
-            defaultCpuFanTable.Fan55 = 40;
-            defaultCpuFanTable.Fan60 = 50;
-            defaultCpuFanTable.Fan65 = 50;
-            defaultCpuFanTable.Fan70 = 60;
-            defaultCpuFanTable.Fan75 = 60;
-            defaultCpuFanTable.Fan80 = 70;
-            defaultCpuFanTable.Fan85 = 70;
-
-            defaultGpuFanTable.Fan40 = 40;
-            defaultGpuFanTable.Fan45 = 40;
-            defaultGpuFanTable.Fan50 = 40;
-            defaultGpuFanTable.Fan55 = 40;
-            defaultGpuFanTable.Fan60 = 50;
-            defaultGpuFanTable.Fan65 = 50;
-            defaultGpuFanTable.Fan70 = 60;
-            defaultGpuFanTable.Fan75 = 60;
-            defaultGpuFanTable.Fan80 = 70;
-            defaultGpuFanTable.Fan85 = 70;
-
-            cpuFanTable = defaultCpuFanTable;
-            gpuFanTable = defaultGpuFanTable;
+            cpuFanTable = userCpuFanTable;
+            gpuFanTable = userGpuFanTable;
 
             LoadFanTableAndConfig();
 
@@ -327,8 +302,6 @@ namespace ClevoFanControl {
                 } else {
                     if (btnProfileManual.Checked) {
                         newFanPerc = 0;
-                    } else if (btnProfileDefault.Checked) {
-                        newFanPerc = 40;
                     } else if (btnProfileMax.Checked) {
                         newFanPerc = 100;
                     } else if (btnProfile50.Checked) {
@@ -365,8 +338,6 @@ namespace ClevoFanControl {
                 } else {
                     if (btnProfileManual.Checked) {
                         newFanPerc = 0;
-                    } else if (btnProfileDefault.Checked) {
-                        newFanPerc = 40;
                     } else if (btnProfileMax.Checked) {
                         newFanPerc = 100;
                     } else if (btnProfile50.Checked) {
@@ -732,25 +703,16 @@ namespace ClevoFanControl {
                     if (profile == "1") {
                         btnProfileManual.Checked = true;
                         mnuProfileManual.Checked = true;
-                        mnuProfileDefault.Checked = false;
-                        mnuProfileMax.Checked = false;
-                        mnuProfile50.Checked = false;
-                    } else if (profile == "2") {
-                        btnProfileDefault.Checked = true;
-                        mnuProfileManual.Checked = false;
-                        mnuProfileDefault.Checked = true;
                         mnuProfileMax.Checked = false;
                         mnuProfile50.Checked = false;
                     } else if (profile == "3") {
                         btnProfileMax.Checked = true;
                         mnuProfileManual.Checked = false;
-                        mnuProfileDefault.Checked = false;
                         mnuProfileMax.Checked = true;
                         mnuProfile50.Checked = false;
                     } else if (profile == "4") {
                         btnProfile50.Checked = true;
                         mnuProfileManual.Checked = false;
-                        mnuProfileDefault.Checked = false;
                         mnuProfileMax.Checked = true;
                         mnuProfile50.Checked = true;
                     }
@@ -819,8 +781,6 @@ namespace ClevoFanControl {
 
                 if (btnProfileManual.Checked) {
                     sw.WriteLine("1");
-                } else if (btnProfileDefault.Checked) {
-                    sw.WriteLine("2");
                 } else if (btnProfileMax.Checked) {
                     sw.WriteLine("3");
                 }
@@ -994,7 +954,6 @@ namespace ClevoFanControl {
                 gpuFanTable = userGpuFanTable;
                 //tabFanCurves.Enabled = true;
                 mnuProfileManual.Checked = true;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
                 mnuProfile30.Checked = false;
@@ -1008,37 +967,12 @@ namespace ClevoFanControl {
             }
         }
 
-        private void btnProfileDefault_CheckedChanged(object sender, EventArgs e) {
-            if (btnProfileDefault.Checked) {
-                //cpuFanTable = defaultCpuFanTable;
-                //gpuFanTable = defaultGpuFanTable;
-                ////tabFanCurves.Enabled = false;
-                //tmrMain.Enabled = false;
-                fan?.SetFansAuto(0);
-                fan?.SetFansAuto(1);
-                fan?.SetFansAuto(2);
-                mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = true;
-                mnuProfileMax.Checked = false;
-                mnuProfile50.Checked = false;
-                mnuProfile30.Checked = false;
-                mnuProfile60.Checked = false;
-                mnuProfile70.Checked = false;
-                clevoAutoFans = true;
-                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
-                    lastOnlineProfile = "2";
-                }
-                profileSwitchOverride = true;
-            }
-        }
-
         private void btnProfileMax_CheckedChanged(object sender, EventArgs e) {
             if (btnProfileMax.Checked) {
                 cpuFanTable = maxFanTable;
                 gpuFanTable = maxFanTable;
                 //tabFanCurves.Enabled = false;
                 mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = true;
                 mnuProfile50.Checked = false;
                 mnuProfile30.Checked = false;
@@ -1058,7 +992,6 @@ namespace ClevoFanControl {
                 gpuFanTable = halfFanTable;
                 //tabFanCurves.Enabled = false;
                 mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = true;
                 mnuProfile30.Checked = false;
@@ -1078,7 +1011,6 @@ namespace ClevoFanControl {
                 gpuFanTable = thirtyFanTable;
                 //tabFanCurves.Enabled = false;
                 mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
                 mnuProfile30.Checked = true;
@@ -1098,7 +1030,6 @@ namespace ClevoFanControl {
                 gpuFanTable = sixtyFanTable;
                 //tabFanCurves.Enabled = false;
                 mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
                 mnuProfile30.Checked = false;
@@ -1118,7 +1049,6 @@ namespace ClevoFanControl {
                 gpuFanTable = seventyFanTable;
                 //tabFanCurves.Enabled = false;
                 mnuProfileManual.Checked = false;
-                mnuProfileDefault.Checked = false;
                 mnuProfileMax.Checked = false;
                 mnuProfile50.Checked = false;
                 mnuProfile30.Checked = false;
@@ -1135,10 +1065,6 @@ namespace ClevoFanControl {
 
         private void mnuProfileManual_Click(object sender, EventArgs e) {
             btnProfileManual.Checked = true;
-        }
-
-        private void mnuProfileDefault_Click(object sender, EventArgs e) {
-            btnProfileDefault.Checked = true;
         }
 
         private void mnuProfileMax_Click(object sender, EventArgs e) {
