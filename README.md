@@ -1,6 +1,6 @@
 # ClevoFanControl
 
-<a href="https://ibb.co/mrmRr2x8"><img src="https://i.ibb.co/hxkgx4qf/Screenshot-2026-06-18-08-31-58.png" alt="Screenshot 2026 06 18 08 31 58" border="0"></a>
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/v5SqQg6/Screenshot-2026-06-19-07-08-04.png" alt="Screenshot 2026 06 19 07 08 04" border="0"></a>
 
 A custom fan control control app for Clevo laptops. The fan icon is borrowed from the Obsidian Fan Control app.
 
