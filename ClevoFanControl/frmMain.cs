@@ -30,9 +30,6 @@ namespace ClevoFanControl {
         int prevCpuTemp;
         int prevGpuTemp;
 
-        int maxCpuTemp = 0;
-        int maxGpuTemp = 0;
-
         FanTable maxFanTable;
         FanTable halfFanTable;
         FanTable thirtyFanTable;
@@ -190,8 +187,6 @@ namespace ClevoFanControl {
             // --- Read temperatures ---
             currentCpuTemp = GetCurrentTemperature("CPU");
             currentGpuTemp = GetCurrentTemperature("GPU");
-            if (currentCpuTemp > maxCpuTemp) maxCpuTemp = currentCpuTemp;
-            if (currentGpuTemp > maxGpuTemp) maxGpuTemp = currentGpuTemp;
 
             // --- Compute continuous target fan speeds ---
             int computedCpuFan = GetInterpolatedFanSpeed("CPU", currentCpuTemp);
@@ -411,19 +406,16 @@ namespace ClevoFanControl {
                 lblCPUTemp.Text = currentCpuTemp + "°";
                 lblCPUFan.Text = prevFanCPUPercentage + "%";
                 prgCPUFan.Width = Convert.ToInt32((Convert.ToDecimal(prevFanCPUPercentage) / 100) * (prgCPUFanContainer.Width - 4));
-                lblCPUMaxTemp.Text = "Max: " + maxCpuTemp.ToString() + "°";
 
                 // GPU display (using original logic, updated to use ramped fan speed for fan display).
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     if (currentGpuTemp > 20) {
                         lblGPUTemp.Text = currentGpuTemp + "°";
-                        lblGPUMaxTemp.Text = "Max: " + maxGpuTemp.ToString() + "°";
                         lblGPUTemp.Font = new Font("Open Sans", 24);
                         lblGPUHeader.ForeColor = Color.Black;
                         lblGPUTemp.ForeColor = Color.Black;
                         lblGPUFanHeader.ForeColor = Color.Black;
                         lblGPUFan.ForeColor = Color.Black;
-                        lblGPUMaxTemp.ForeColor = Color.Black;
                     } else {
                         lblGPUTemp.Text = "Asleep";
                         lblGPUTemp.Font = new Font("Open Sans", 24);
@@ -431,7 +423,6 @@ namespace ClevoFanControl {
                         lblGPUTemp.ForeColor = Color.DimGray;
                         lblGPUFanHeader.ForeColor = Color.DimGray;
                         lblGPUFan.ForeColor = Color.DimGray;
-                        lblGPUMaxTemp.ForeColor = Color.DimGray;
                     }
                     lblGPUFan.Text = prevFanGPUPercentage + "%";
                     prgGPUFan.Width = Convert.ToInt32((Convert.ToDecimal(prevFanGPUPercentage) / 100) * (prgGPUFanContainer.Width - 4));
@@ -1015,14 +1006,6 @@ namespace ClevoFanControl {
 
         private void btnAlwaysOnTop_CheckedChanged(object sender, EventArgs e) {
             TopMost = btnAlwaysOnTop.Checked;
-        }
-
-        private void lblCPUMaxTemp_Click(object sender, EventArgs e) {
-            maxCpuTemp = currentCpuTemp;
-        }
-
-        private void lblGPUMaxTemp_Click(object sender, EventArgs e) {
-            maxGpuTemp = currentGpuTemp;
         }
 
         private void cpuPlot_PlotChanged(object sender, CurveEditorControl.PlotChangedEventArgs e) {

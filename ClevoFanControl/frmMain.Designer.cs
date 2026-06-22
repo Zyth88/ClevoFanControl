@@ -47,10 +47,8 @@ namespace ClevoFanControl {
             this.mnuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlCPUStats = new System.Windows.Forms.Panel();
-            this.lblCPUMaxTemp = new System.Windows.Forms.Label();
             this.imgStatIntel = new System.Windows.Forms.PictureBox();
             this.pnlGPUStats = new System.Windows.Forms.Panel();
-            this.lblGPUMaxTemp = new System.Windows.Forms.Label();
             this.imgStatNvidia = new System.Windows.Forms.PictureBox();
             this.lblGPUHeader = new System.Windows.Forms.Label();
             this.lblGPUFanHeader = new System.Windows.Forms.Label();
@@ -278,7 +276,6 @@ namespace ClevoFanControl {
             // pnlCPUStats
             // 
             this.pnlCPUStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlCPUStats.Controls.Add(this.lblCPUMaxTemp);
             this.pnlCPUStats.Controls.Add(this.imgStatIntel);
             this.pnlCPUStats.Controls.Add(this.lblCPUHeader);
             this.pnlCPUStats.Controls.Add(this.lblCPUFanHeader);
@@ -288,20 +285,6 @@ namespace ClevoFanControl {
             this.pnlCPUStats.Name = "pnlCPUStats";
             this.pnlCPUStats.Size = new System.Drawing.Size(135, 130);
             this.pnlCPUStats.TabIndex = 11;
-            // 
-            // lblCPUMaxTemp
-            // 
-            this.lblCPUMaxTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCPUMaxTemp.ForeColor = System.Drawing.Color.Black;
-            this.lblCPUMaxTemp.Location = new System.Drawing.Point(5, 77);
-            this.lblCPUMaxTemp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCPUMaxTemp.Name = "lblCPUMaxTemp";
-            this.lblCPUMaxTemp.Size = new System.Drawing.Size(123, 20);
-            this.lblCPUMaxTemp.TabIndex = 11;
-            this.lblCPUMaxTemp.Text = "Max: 0";
-            this.lblCPUMaxTemp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.tipTooltip.SetToolTip(this.lblCPUMaxTemp, "Click to reset CPU max temperature");
-            this.lblCPUMaxTemp.Click += new System.EventHandler(this.lblCPUMaxTemp_Click);
             // 
             // imgStatIntel
             // 
@@ -316,7 +299,6 @@ namespace ClevoFanControl {
             // pnlGPUStats
             // 
             this.pnlGPUStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlGPUStats.Controls.Add(this.lblGPUMaxTemp);
             this.pnlGPUStats.Controls.Add(this.imgStatNvidia);
             this.pnlGPUStats.Controls.Add(this.lblGPUHeader);
             this.pnlGPUStats.Controls.Add(this.lblGPUFanHeader);
@@ -326,20 +308,6 @@ namespace ClevoFanControl {
             this.pnlGPUStats.Name = "pnlGPUStats";
             this.pnlGPUStats.Size = new System.Drawing.Size(135, 130);
             this.pnlGPUStats.TabIndex = 12;
-            // 
-            // lblGPUMaxTemp
-            // 
-            this.lblGPUMaxTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGPUMaxTemp.ForeColor = System.Drawing.Color.Black;
-            this.lblGPUMaxTemp.Location = new System.Drawing.Point(5, 77);
-            this.lblGPUMaxTemp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblGPUMaxTemp.Name = "lblGPUMaxTemp";
-            this.lblGPUMaxTemp.Size = new System.Drawing.Size(123, 20);
-            this.lblGPUMaxTemp.TabIndex = 10;
-            this.lblGPUMaxTemp.Text = "Max: 0";
-            this.lblGPUMaxTemp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.tipTooltip.SetToolTip(this.lblGPUMaxTemp, "Click to reset GPU max temperature");
-            this.lblGPUMaxTemp.Click += new System.EventHandler(this.lblGPUMaxTemp_Click);
             // 
             // imgStatNvidia
             // 
@@ -874,8 +842,6 @@ namespace ClevoFanControl {
         private System.Windows.Forms.ToolStripSeparator mnuSeparator2;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.CheckBox btnAlwaysOnTop;
-        private System.Windows.Forms.Label lblCPUMaxTemp;
-        private System.Windows.Forms.Label lblGPUMaxTemp;
         private System.Windows.Forms.ToolTip tipTooltip;
         private System.Windows.Forms.RadioButton btnProfile50;
         private System.Windows.Forms.RadioButton btnProfile30;
