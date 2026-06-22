@@ -14,6 +14,43 @@ This project is a streamlined fork of the original Clevo Fan Control developed b
 - Lightweight and minimal interface
 - No unnecessary background services
 
+## Changes & Improvements
+Updated to .NET Framework 4.8
+
+Updated solution to Visual Studio 18
+
+Added more static fan profiles
+
+Removed unnecessary features, bloated code, and unused functionality
+
+improved EC error handling
+
+Stability / Reliability Improvements
+
+Increased EC polling interval to 10s to reduce timeouts
+
+Serialized EC operations using SemaphoreSlim to prevent conflicts
+
+Switched CPU temperature readings from EC to WMI for improved reliability
+
+Removed fan ramping logic and now applies fan speed changes directly with a delay
+
+Refactoring / Cleanup
+
+Refactored FanTable into a class with a CreateConstant initializer
+
+Removed CPU/GPU safety temperature controls and related variables
+
+Adjusted async fan ramping behavior to discard unawaited tasks, eliminating compiler warnings
+
+Removed timerTickCount and related usage
+
+Deleted CalcFanPercentage
+
+Removed unused/commented fan ramping and shutdown code
+
+Removed max CPU/GPU temperature tracking and display
+
 ## Download
 
 Precompiled releases are available from the project's Releases page:
