@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Management;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -13,7 +10,10 @@ using System.Windows.Forms;
 namespace ClevoFanControl {
     public partial class frmMain : Form {
 
-        private const int EC_POLL_INTERVAL = 3000; // interval to poll EC
+        private const int EC_POLL_INTERVAL = 10000; // interval to poll EC (increased to 10s to prevent EC timeouts)
+
+        // Semaphore to serialize EC operations and prevent timeouts
+        private static readonly SemaphoreSlim ecSemaphore = new SemaphoreSlim(1, 1);
 
         private IFanControl fan;
 
@@ -37,17 +37,19 @@ namespace ClevoFanControl {
         FanTable eightyFanTable;
         FanTable ninetyFanTable;
 
-        FanTable userCpuFanTable;
-        FanTable userGpuFanTable;
+        FanTable userCpuFanTable = new FanTable();
+        FanTable userGpuFanTable = new FanTable();
 
         FanTable cpuFanTable;
         FanTable gpuFanTable;
 
         string lastOnlineProfile = "";
 
-        // --- Constants for hold and ramping durations ---
-        private const int MIN_PEAK_HOLD_TICKS = 10;   // 8 ticks * 2.5 sec = 20 seconds hold before allowing a drop
-        private const int RAMP_DURATION_MS = 5000;     // 5 seconds for a complete ramp transition
+        // --- Constants for hold duration ---
+        private const int MIN_PEAK_HOLD_TICKS = 3;   // 3 ticks * 10 sec = 30 seconds hold before allowing a drop
+
+        // --- Cached Font to avoid allocations ---
+        private readonly Font openSans24 = new Font("Open Sans", 24);
 
         // --- Hold counters for CPU and GPU (for descending fan speeds) ---
         private int cpuHoldCounter = 0;
@@ -55,10 +57,6 @@ namespace ClevoFanControl {
 
         // --- Flag for immediate profile override ---
         private bool profileSwitchOverride = false;
-
-        // --- Cancellation tokens for asynchronous ramping ---
-        private CancellationTokenSource cpuRampCTS = new CancellationTokenSource();
-        private CancellationTokenSource gpuRampCTS = new CancellationTokenSource();
 
         public frmMain() {
             InitializeComponent();
@@ -70,93 +68,14 @@ namespace ClevoFanControl {
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
-            maxFanTable.Fan40 = 100;
-            maxFanTable.Fan45 = 100;
-            maxFanTable.Fan50 = 100;
-            maxFanTable.Fan55 = 100;
-            maxFanTable.Fan60 = 100;
-            maxFanTable.Fan65 = 100;
-            maxFanTable.Fan70 = 100;
-            maxFanTable.Fan75 = 100;
-            maxFanTable.Fan80 = 100;
-            maxFanTable.Fan85 = 100;
-
-            halfFanTable.Fan40 = 50;
-            halfFanTable.Fan45 = 50;
-            halfFanTable.Fan50 = 50;
-            halfFanTable.Fan55 = 50;
-            halfFanTable.Fan60 = 50;
-            halfFanTable.Fan65 = 50;
-            halfFanTable.Fan70 = 50;
-            halfFanTable.Fan75 = 50;
-            halfFanTable.Fan80 = 50;
-            halfFanTable.Fan85 = 50;
-
-            thirtyFanTable.Fan40 = 30;
-            thirtyFanTable.Fan45 = 30;
-            thirtyFanTable.Fan50 = 30;
-            thirtyFanTable.Fan55 = 30;
-            thirtyFanTable.Fan60 = 30;
-            thirtyFanTable.Fan65 = 30;
-            thirtyFanTable.Fan70 = 30;
-            thirtyFanTable.Fan75 = 30;
-            thirtyFanTable.Fan80 = 30;
-            thirtyFanTable.Fan85 = 30;
-
-            sixtyFanTable.Fan40 = 60;
-            sixtyFanTable.Fan45 = 60;
-            sixtyFanTable.Fan50 = 60;
-            sixtyFanTable.Fan55 = 60;
-            sixtyFanTable.Fan60 = 60;
-            sixtyFanTable.Fan65 = 60;
-            sixtyFanTable.Fan70 = 60;
-            sixtyFanTable.Fan75 = 60;
-            sixtyFanTable.Fan80 = 60;
-            sixtyFanTable.Fan85 = 60;
-
-            seventyFanTable.Fan40 = 70;
-            seventyFanTable.Fan45 = 70;
-            seventyFanTable.Fan50 = 70;
-            seventyFanTable.Fan55 = 70;
-            seventyFanTable.Fan60 = 70;
-            seventyFanTable.Fan65 = 70;
-            seventyFanTable.Fan70 = 70;
-            seventyFanTable.Fan75 = 70;
-            seventyFanTable.Fan80 = 70;
-            seventyFanTable.Fan85 = 70;
-
-            fortyFanTable.Fan40 = 40;
-            fortyFanTable.Fan45 = 40;
-            fortyFanTable.Fan50 = 40;
-            fortyFanTable.Fan55 = 40;
-            fortyFanTable.Fan60 = 40;
-            fortyFanTable.Fan65 = 40;
-            fortyFanTable.Fan70 = 40;
-            fortyFanTable.Fan75 = 40;
-            fortyFanTable.Fan80 = 40;
-            fortyFanTable.Fan85 = 40;
-
-            eightyFanTable.Fan40 = 80;
-            eightyFanTable.Fan45 = 80;
-            eightyFanTable.Fan50 = 80;
-            eightyFanTable.Fan55 = 80;
-            eightyFanTable.Fan60 = 80;
-            eightyFanTable.Fan65 = 80;
-            eightyFanTable.Fan70 = 80;
-            eightyFanTable.Fan75 = 80;
-            eightyFanTable.Fan80 = 80;
-            eightyFanTable.Fan85 = 80;
-
-            ninetyFanTable.Fan40 = 90;
-            ninetyFanTable.Fan45 = 90;
-            ninetyFanTable.Fan50 = 90;
-            ninetyFanTable.Fan55 = 90;
-            ninetyFanTable.Fan60 = 90;
-            ninetyFanTable.Fan65 = 90;
-            ninetyFanTable.Fan70 = 90;
-            ninetyFanTable.Fan75 = 90;
-            ninetyFanTable.Fan80 = 90;
-            ninetyFanTable.Fan85 = 90;
+            maxFanTable = FanTable.CreateConstant(100);
+            halfFanTable = FanTable.CreateConstant(50);
+            thirtyFanTable = FanTable.CreateConstant(30);
+            fortyFanTable = FanTable.CreateConstant(40);
+            sixtyFanTable = FanTable.CreateConstant(60);
+            seventyFanTable = FanTable.CreateConstant(70);
+            eightyFanTable = FanTable.CreateConstant(80);
+            ninetyFanTable = FanTable.CreateConstant(90);
 
             cpuFanTable = userCpuFanTable;
             gpuFanTable = userGpuFanTable;
@@ -182,9 +101,17 @@ namespace ClevoFanControl {
         }
 
         private void tmrMain_Tick(object sender, EventArgs e) {
-            // --- Read temperatures ---
+            // --- Read CPU temperature from WMI (no EC access needed!) ---
             currentCpuTemp = GetCurrentTemperature("CPU");
-            currentGpuTemp = GetCurrentTemperature("GPU");
+
+            // --- Read GPU temperature from EC (only 1 EC read per cycle now) ---
+            ecSemaphore.Wait();
+            try {
+                currentGpuTemp = GetCurrentTemperature("GPU");
+                Thread.Sleep(500); // Delay after EC read
+            } finally {
+                ecSemaphore.Release();
+            }
 
             // --- Compute continuous target fan speeds ---
             int computedCpuFan = GetInterpolatedFanSpeed("CPU", currentCpuTemp);
@@ -197,21 +124,16 @@ namespace ClevoFanControl {
 
             // --- Profile switch override: apply changes immediately if user switched profiles ---
             if (profileSwitchOverride) {
-                // Cancel any ramping tasks.
-                cpuRampCTS.Cancel();
-                gpuRampCTS.Cancel();
-                cpuRampCTS = new CancellationTokenSource();
-                gpuRampCTS = new CancellationTokenSource();
+                SetFanSpeedWithDelay(1, computedCpuFan);
+                SetFanSpeedWithDelay(2, computedGpuFan);
 
-                fan?.SetFanSpeed(1, computedCpuFan);
-                fan?.SetFanSpeed(2, computedGpuFan);
                 prevFanCPUPercentage = computedCpuFan;
                 prevFanGPUPercentage = computedGpuFan;
                 cpuHoldCounter = 0;
                 gpuHoldCounter = 0;
                 profileSwitchOverride = false;
             } else {
-                // --- Apply 20-second hold when reducing fan speeds ---
+                // --- Apply 28-second hold when reducing fan speeds ---
                 if (computedCpuFan < prevFanCPUPercentage) {
                     cpuHoldCounter++;
                     if (cpuHoldCounter < MIN_PEAK_HOLD_TICKS) {
@@ -235,120 +157,116 @@ namespace ClevoFanControl {
                     gpuHoldCounter = 0;
                 }
 
-                // --- Initiate asynchronous ramping over 5 seconds for smooth transitions ---
+                // --- Direct fan speed changes (no ramping) ---
                 if (computedCpuFan != prevFanCPUPercentage) {
-                    // Cancel any existing CPU ramp task and start a new one.
-                    cpuRampCTS.Cancel();
-                    cpuRampCTS = new CancellationTokenSource();
-                    _ = RampFanSpeedAsync(1, prevFanCPUPercentage, computedCpuFan, cpuRampCTS.Token);
+                    SetFanSpeedWithDelay(1, computedCpuFan);
                     prevFanCPUPercentage = computedCpuFan;
                 }
+
                 if (computedGpuFan != prevFanGPUPercentage) {
-                    gpuRampCTS.Cancel();
-                    gpuRampCTS = new CancellationTokenSource();
-                    _ = RampFanSpeedAsync(2, prevFanGPUPercentage, computedGpuFan, gpuRampCTS.Token);
+                    SetFanSpeedWithDelay(2, computedGpuFan);
                     prevFanGPUPercentage = computedGpuFan;
                 }
             }
         }
 
         private int GetCurrentTemperature(string device) {
-
-            int returnTemp = -1;
-
-            if (device == "CPU") {
-                var cpuTemp = fan?.GetECData(1).Remote;
-                if (cpuTemp <= 100) {
-                    prevCpuTemp = (Int32)cpuTemp;
+            try {
+                if (device == "CPU") {
+                    // Use WMI to get CPU temperature (much more reliable than EC)
+                    using (var searcher = new ManagementObjectSearcher(@"root\WMI", "SELECT * FROM MSAcpi_ThermalZoneTemperature")) {
+                        foreach (ManagementObject obj in searcher.Get()) {
+                            var temp = Convert.ToDouble(obj["CurrentTemperature"]);
+                            // WMI returns temperature in tenths of Kelvin, convert to Celsius
+                            var celsius = (int)((temp - 2732) / 10.0);
+                            if (celsius > 0 && celsius < 120) {
+                                prevCpuTemp = celsius;
+                                return celsius;
+                            }
+                        }
+                    }
+                    // Fallback to previous value if WMI fails
+                    return prevCpuTemp > 0 ? prevCpuTemp : 50;
                 } else {
-                    return prevCpuTemp;
+                    // For GPU, still use EC for now (could be replaced with NVML/AMD libs later)
+                    var temp = fan?.GetECData(2).Remote ?? 0;
+                    if (temp > 0 && temp <= 100) {
+                        prevGpuTemp = (int)temp;
+                        return (int)temp;
+                    }
+                    return prevGpuTemp > 0 ? prevGpuTemp : 40;
                 }
-                return (Int32)cpuTemp;
-
-            } else if (device == "GPU") {
-
-                var gpuTemp = fan?.GetECData(2).Remote;
-                if (gpuTemp <= 100) {
-                    prevGpuTemp = (Int32)gpuTemp;
-                } else {
-                    return prevGpuTemp;
-                }
-                return (Int32)gpuTemp;
-
+            } catch {
+                // If anything fails, return previous safe value
+                return device == "CPU" ? (prevCpuTemp > 0 ? prevCpuTemp : 50) : (prevGpuTemp > 0 ? prevGpuTemp : 40);
             }
+        }
 
-            return returnTemp;
+        private void SetFanSpeedWithDelay(int fanNr, int speed) {
+            Thread.Sleep(300);
+            ecSemaphore.Wait();
+            try {
+                fan?.SetFanSpeed(fanNr, speed);
+                Thread.Sleep(500);
+            } finally {
+                ecSemaphore.Release();
+            }
         }
 
         private void SetFansToMaximum() {
-            fan?.SetFanSpeed(1, 100);
-            fan?.SetFanSpeed(2, 100);
-        }
-
-        private async Task RampFanSpeedAsync(int fanNumber, int startSpeed, int targetSpeed, CancellationToken ct) {
-            int steps = 20; // 20 steps over 5 seconds (each step: 250ms)
-            for (int i = 1; i <= steps; i++) {
-                if (ct.IsCancellationRequested)
-                    return;
-                int newSpeed = startSpeed + (int)Math.Round((targetSpeed - startSpeed) * (i / (double)steps));
-                if (fanNumber == 1)
-                    fan?.SetFanSpeed(1, newSpeed);
-                else if (fanNumber == 2)
-                    fan?.SetFanSpeed(2, newSpeed);
-                try {
-                    await Task.Delay(250, ct);
-                } catch (TaskCanceledException) {
-                    return;
-                }
+            ecSemaphore.Wait();
+            try {
+                fan?.SetFanSpeed(1, 100);
+                Thread.Sleep(500);
+            } finally {
+                ecSemaphore.Release();
             }
-            // Ensure the final target is reached.
-            if (fanNumber == 1)
-                fan?.SetFanSpeed(1, targetSpeed);
-            else if (fanNumber == 2)
-                fan?.SetFanSpeed(2, targetSpeed);
+
+            Thread.Sleep(300); // Spacing between operations
+
+            ecSemaphore.Wait();
+            try {
+                fan?.SetFanSpeed(2, 100);
+                Thread.Sleep(500);
+            } finally {
+                ecSemaphore.Release();
+            }
         }
 
         private void UpdateGui() {
             if (WindowState != FormWindowState.Minimized) {
-                // CPU display using ramped fan speed.
+                // CPU display
                 lblCPUTemp.Text = currentCpuTemp + "°";
                 lblCPUFan.Text = prevFanCPUPercentage + "%";
-                prgCPUFan.Width = Convert.ToInt32((Convert.ToDecimal(prevFanCPUPercentage) / 100) * (prgCPUFanContainer.Width - 4));
+                prgCPUFan.Width = (int)((prevFanCPUPercentage / 100.0) * (prgCPUFanContainer.Width - 4));
 
-                // GPU display (using original logic, updated to use ramped fan speed for fan display).
+                // GPU display
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
                     if (currentGpuTemp > 20) {
                         lblGPUTemp.Text = currentGpuTemp + "°";
-                        lblGPUTemp.Font = new Font("Open Sans", 24);
+                        lblGPUTemp.Font = openSans24;
                         lblGPUHeader.ForeColor = Color.Black;
                         lblGPUTemp.ForeColor = Color.Black;
                         lblGPUFanHeader.ForeColor = Color.Black;
                         lblGPUFan.ForeColor = Color.Black;
                     } else {
                         lblGPUTemp.Text = "Asleep";
-                        lblGPUTemp.Font = new Font("Open Sans", 24);
+                        lblGPUTemp.Font = openSans24;
                         lblGPUHeader.ForeColor = Color.DimGray;
                         lblGPUTemp.ForeColor = Color.DimGray;
                         lblGPUFanHeader.ForeColor = Color.DimGray;
                         lblGPUFan.ForeColor = Color.DimGray;
                     }
                     lblGPUFan.Text = prevFanGPUPercentage + "%";
-                    prgGPUFan.Width = Convert.ToInt32((Convert.ToDecimal(prevFanGPUPercentage) / 100) * (prgGPUFanContainer.Width - 4));
+                    prgGPUFan.Width = (int)((prevFanGPUPercentage / 100.0) * (prgGPUFanContainer.Width - 4));
                 } else {
                     lblGPUTemp.Text = "Batt.";
-                    lblGPUTemp.Font = new Font("Open Sans", 24);
+                    lblGPUTemp.Font = openSans24;
                 }
 
             // Update the tray tooltip with current values.
-            string tooltip =
-                "CPU\n" +
-                "  Temp: " + currentCpuTemp + "°\n" +
-                "  Fan: " + prevFanCPUPercentage + "%\n\n" +
-                "GPU\n" +
-                (currentGpuTemp > 20
-                    ? "  Temp: " + currentGpuTemp + "°\n" + "  Fan: " + prevFanGPUPercentage + "%"
-                    : "  Asleep");
-            icoTray.Text = tooltip;
+            icoTray.Text = $"CPU\n  Temp: {currentCpuTemp}°\n  Fan: {prevFanCPUPercentage}%\n\nGPU\n" +
+                           (currentGpuTemp > 20 ? $"  Temp: {currentGpuTemp}°\n  Fan: {prevFanGPUPercentage}%" : "  Asleep");
             }
         }
 
@@ -557,6 +475,8 @@ namespace ClevoFanControl {
             Show();
             WindowState = FormWindowState.Normal;
             ShowInTaskbar = true;
+            // Lock form size to prevent auto-resize
+            ClientSize = new Size(601, 592);
         }
         private void ExitApp() {
             tmrMain.Enabled = false;
@@ -564,6 +484,7 @@ namespace ClevoFanControl {
             fan?.SetFansAuto(1);
             fan?.SetFansAuto(2);
             fan?.Dispose();
+            openSans24?.Dispose();
             SaveFanTableAndConfig();
             Close();
             Application.Exit();
@@ -1027,7 +948,7 @@ namespace ClevoFanControl {
 
     }
 
-    struct FanTable {
+    class FanTable {
         public int Fan40;
         public int Fan45;
         public int Fan50;
@@ -1038,6 +959,13 @@ namespace ClevoFanControl {
         public int Fan75;
         public int Fan80;
         public int Fan85;
+
+        public static FanTable CreateConstant(int speed) {
+            return new FanTable {
+                Fan40 = speed, Fan45 = speed, Fan50 = speed, Fan55 = speed, Fan60 = speed,
+                Fan65 = speed, Fan70 = speed, Fan75 = speed, Fan80 = speed, Fan85 = speed
+            };
+        }
     }
 
     public class PlotChangedEventArgs : EventArgs {
