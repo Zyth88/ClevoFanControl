@@ -16,8 +16,6 @@ namespace ClevoFanControl {
         private const int EC_POLL_INTERVAL = 3000; // interval to poll EC
         
         int timerTickCount = 0;
-        int cpuFanRampIntervals = 5;
-        int gpuFanRampIntervals = 5;
 
         private IFanControl fan;
 
@@ -31,8 +29,6 @@ namespace ClevoFanControl {
         int currentGpuTemp;
         int prevCpuTemp;
         int prevGpuTemp;
-        int currentCpuFan;
-        int currentGpuFan;
 
         int maxCpuTemp = 0;
         int maxGpuTemp = 0;
@@ -251,13 +247,13 @@ namespace ClevoFanControl {
                     // Cancel any existing CPU ramp task and start a new one.
                     cpuRampCTS.Cancel();
                     cpuRampCTS = new CancellationTokenSource();
-                    RampFanSpeedAsync(1, prevFanCPUPercentage, computedCpuFan, cpuRampCTS.Token);
+                    _ = RampFanSpeedAsync(1, prevFanCPUPercentage, computedCpuFan, cpuRampCTS.Token);
                     prevFanCPUPercentage = computedCpuFan;
                 }
                 if (computedGpuFan != prevFanGPUPercentage) {
                     gpuRampCTS.Cancel();
                     gpuRampCTS = new CancellationTokenSource();
-                    RampFanSpeedAsync(2, prevFanGPUPercentage, computedGpuFan, gpuRampCTS.Token);
+                    _ = RampFanSpeedAsync(2, prevFanGPUPercentage, computedGpuFan, gpuRampCTS.Token);
                     prevFanGPUPercentage = computedGpuFan;
                 }
             }

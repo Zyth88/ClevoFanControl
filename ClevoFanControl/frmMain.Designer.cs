@@ -877,12 +877,6 @@ namespace ClevoFanControl {
         private System.Windows.Forms.Label lblCPUMaxTemp;
         private System.Windows.Forms.Label lblGPUMaxTemp;
         private System.Windows.Forms.ToolTip tipTooltip;
-        private System.Windows.Forms.Label lblCpuSafetyTemp;
-        private System.Windows.Forms.Label lblCpuSafetyTemp2;
-        private System.Windows.Forms.NumericUpDown txtCpuSafetyTemp;
-        private System.Windows.Forms.NumericUpDown txtGpuSafetyTemp;
-        private System.Windows.Forms.Label lblGpuSafetyTemp2;
-        private System.Windows.Forms.Label lblGpuSafetyTemp;
         private System.Windows.Forms.RadioButton btnProfile50;
         private System.Windows.Forms.RadioButton btnProfile30;
         private System.Windows.Forms.RadioButton btnProfile40;
