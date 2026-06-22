@@ -14,8 +14,6 @@ namespace ClevoFanControl {
     public partial class frmMain : Form {
 
         private const int EC_POLL_INTERVAL = 3000; // interval to poll EC
-        
-        int timerTickCount = 0;
 
         private IFanControl fan;
 
@@ -252,94 +250,6 @@ namespace ClevoFanControl {
                     prevFanGPUPercentage = computedGpuFan;
                 }
             }
-
-            timerTickCount++;
-            if (timerTickCount * tmrMain.Interval * 0.001 > 60)
-                timerTickCount = 0;
-
-            prevCpuTemp = currentCpuTemp;
-            prevGpuTemp = currentGpuTemp;
-        }
-
-        private int CalcFanPercentage(string device, int currentTemp) {
-
-            int newFanPerc;
-
-            if (device == "CPU") {
-
-                if (currentTemp >= 90) {
-                    newFanPerc = cpuFanTable.Fan85;
-                } else if (currentTemp >= 80) {
-                    newFanPerc = cpuFanTable.Fan80;
-                } else if (currentTemp >= 75) {
-                    newFanPerc = cpuFanTable.Fan75;
-                } else if (currentTemp >= 70) {
-                    newFanPerc = cpuFanTable.Fan70;
-                } else if (currentTemp >= 65) {
-                    newFanPerc = cpuFanTable.Fan65;
-                } else if (currentTemp >= 60) {
-                    newFanPerc = cpuFanTable.Fan60;
-                } else if (currentTemp >= 55) {
-                    newFanPerc = cpuFanTable.Fan55;
-                } else if (currentTemp >= 50) {
-                    newFanPerc = cpuFanTable.Fan50;
-                } else if (currentTemp >= 45) {
-                    newFanPerc = cpuFanTable.Fan45;
-                } else if (currentTemp >= 40) {
-                    newFanPerc = cpuFanTable.Fan40;
-                } else {
-                    if (btnProfileManual.Checked) {
-                        newFanPerc = 0;
-                    } else if (btnProfileMax.Checked) {
-                        newFanPerc = 100;
-                    } else if (btnProfile50.Checked) {
-                        newFanPerc = 50;
-                    } else {
-                        newFanPerc = 100;
-                    }
-                }
-
-                return newFanPerc;
-
-            } else if (device == "GPU") {
-
-                if (currentTemp >= 85) {
-                    newFanPerc = gpuFanTable.Fan85;
-                } else if (currentTemp >= 80) {
-                    newFanPerc = gpuFanTable.Fan80;
-                } else if (currentTemp >= 75) {
-                    newFanPerc = gpuFanTable.Fan75;
-                } else if (currentTemp >= 70) {
-                    newFanPerc = gpuFanTable.Fan70;
-                } else if (currentTemp >= 65) {
-                    newFanPerc = gpuFanTable.Fan65;
-                } else if (currentTemp >= 60) {
-                    newFanPerc = gpuFanTable.Fan60;
-                } else if (currentTemp >= 55) {
-                    newFanPerc = gpuFanTable.Fan55;
-                } else if (currentTemp >= 50) {
-                    newFanPerc = gpuFanTable.Fan50;
-                } else if (currentTemp >= 45) {
-                    newFanPerc = gpuFanTable.Fan45;
-                } else if (currentTemp >= 40) {
-                    newFanPerc = gpuFanTable.Fan40;
-                } else {
-                    if (btnProfileManual.Checked) {
-                        newFanPerc = 0;
-                    } else if (btnProfileMax.Checked) {
-                        newFanPerc = 100;
-                    } else if (btnProfile50.Checked) {
-                        newFanPerc = 50;
-                    } else {
-                        newFanPerc = 100;
-                    }
-                }
-
-                return newFanPerc;
-
-            }
-
-            return 100;
         }
 
         private int GetCurrentTemperature(string device) {
@@ -373,8 +283,6 @@ namespace ClevoFanControl {
         private void SetFansToMaximum() {
             fan?.SetFanSpeed(1, 100);
             fan?.SetFanSpeed(2, 100);
-            //RampFanSpeed(1, 100);
-            //RampFanSpeed(2, 100);
         }
 
         private async Task RampFanSpeedAsync(int fanNumber, int startSpeed, int targetSpeed, CancellationToken ct) {
@@ -652,8 +560,6 @@ namespace ClevoFanControl {
         }
         private void ExitApp() {
             tmrMain.Enabled = false;
-            //computer.Close();
-            //SetFansToMaximum();
             fan?.SetFansAuto(0);
             fan?.SetFansAuto(1);
             fan?.SetFansAuto(2);
