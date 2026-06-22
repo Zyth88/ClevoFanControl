@@ -35,8 +35,6 @@ Switched CPU temperature readings from EC to WMI for improved reliability
 
 Removed fan ramping logic and now applies fan speed changes directly with a delay
 
-Refactoring / Cleanup
-
 Refactored FanTable into a class with a CreateConstant initializer
 
 Removed CPU/GPU safety temperature controls and related variables
@@ -50,6 +48,10 @@ Deleted CalcFanPercentage
 Removed unused/commented fan ramping and shutdown code
 
 Removed max CPU/GPU temperature tracking and display
+
+Increase GUI update interval, optimize WMI temperature reads
+
+Skip GUI updates when window is minimized or hidden.
 
 ## Download
 

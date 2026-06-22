@@ -746,7 +746,7 @@ namespace ClevoFanControl {
             // tmrGui
             // 
             this.tmrGui.Enabled = true;
-            this.tmrGui.Interval = 1000;
+            this.tmrGui.Interval = 2000;
             this.tmrGui.Tick += new System.EventHandler(this.tmrGui_Tick);
             // 
             // frmMain

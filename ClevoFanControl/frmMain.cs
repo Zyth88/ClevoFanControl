@@ -51,6 +51,9 @@ namespace ClevoFanControl {
         // --- Cached Font to avoid allocations ---
         private readonly Font openSans24 = new Font("Open Sans", 24);
 
+        // --- Cached WMI searcher to avoid recreating every temperature read ---
+        private ManagementObjectSearcher wmiTempSearcher;
+
         // --- Hold counters for CPU and GPU (for descending fan speeds) ---
         private int cpuHoldCounter = 0;
         private int gpuHoldCounter = 0;
@@ -65,6 +68,13 @@ namespace ClevoFanControl {
         private void Form1_Load(object sender, EventArgs e) {
 
             fan = new ClevoEcInfo();
+
+            // Initialize WMI searcher once for reuse
+            try {
+                wmiTempSearcher = new ManagementObjectSearcher(@"root\WMI", "SELECT * FROM MSAcpi_ThermalZoneTemperature");
+            } catch {
+                wmiTempSearcher = null;
+            }
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
@@ -173,9 +183,9 @@ namespace ClevoFanControl {
         private int GetCurrentTemperature(string device) {
             try {
                 if (device == "CPU") {
-                    // Use WMI to get CPU temperature (much more reliable than EC)
-                    using (var searcher = new ManagementObjectSearcher(@"root\WMI", "SELECT * FROM MSAcpi_ThermalZoneTemperature")) {
-                        foreach (ManagementObject obj in searcher.Get()) {
+                    // Use cached WMI searcher (much faster than creating new one each time)
+                    if (wmiTempSearcher != null) {
+                        foreach (ManagementObject obj in wmiTempSearcher.Get()) {
                             var temp = Convert.ToDouble(obj["CurrentTemperature"]);
                             // WMI returns temperature in tenths of Kelvin, convert to Celsius
                             var celsius = (int)((temp - 2732) / 10.0);
@@ -234,40 +244,43 @@ namespace ClevoFanControl {
         }
 
         private void UpdateGui() {
-            if (WindowState != FormWindowState.Minimized) {
-                // CPU display
-                lblCPUTemp.Text = currentCpuTemp + "°";
-                lblCPUFan.Text = prevFanCPUPercentage + "%";
-                prgCPUFan.Width = (int)((prevFanCPUPercentage / 100.0) * (prgCPUFanContainer.Width - 4));
+            // Skip GUI updates entirely when minimized or hidden - saves CPU cycles
+            if (WindowState == FormWindowState.Minimized || !Visible) {
+                return;
+            }
 
-                // GPU display
-                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
-                    if (currentGpuTemp > 20) {
-                        lblGPUTemp.Text = currentGpuTemp + "°";
-                        lblGPUTemp.Font = openSans24;
-                        lblGPUHeader.ForeColor = Color.Black;
-                        lblGPUTemp.ForeColor = Color.Black;
-                        lblGPUFanHeader.ForeColor = Color.Black;
-                        lblGPUFan.ForeColor = Color.Black;
-                    } else {
-                        lblGPUTemp.Text = "Asleep";
-                        lblGPUTemp.Font = openSans24;
-                        lblGPUHeader.ForeColor = Color.DimGray;
-                        lblGPUTemp.ForeColor = Color.DimGray;
-                        lblGPUFanHeader.ForeColor = Color.DimGray;
-                        lblGPUFan.ForeColor = Color.DimGray;
-                    }
-                    lblGPUFan.Text = prevFanGPUPercentage + "%";
-                    prgGPUFan.Width = (int)((prevFanGPUPercentage / 100.0) * (prgGPUFanContainer.Width - 4));
-                } else {
-                    lblGPUTemp.Text = "Batt.";
+            // CPU display
+            lblCPUTemp.Text = currentCpuTemp + "°";
+            lblCPUFan.Text = prevFanCPUPercentage + "%";
+            prgCPUFan.Width = (int)((prevFanCPUPercentage / 100.0) * (prgCPUFanContainer.Width - 4));
+
+            // GPU display
+            if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online) {
+                if (currentGpuTemp > 20) {
+                    lblGPUTemp.Text = currentGpuTemp + "°";
                     lblGPUTemp.Font = openSans24;
+                    lblGPUHeader.ForeColor = Color.Black;
+                    lblGPUTemp.ForeColor = Color.Black;
+                    lblGPUFanHeader.ForeColor = Color.Black;
+                    lblGPUFan.ForeColor = Color.Black;
+                } else {
+                    lblGPUTemp.Text = "Asleep";
+                    lblGPUTemp.Font = openSans24;
+                    lblGPUHeader.ForeColor = Color.DimGray;
+                    lblGPUTemp.ForeColor = Color.DimGray;
+                    lblGPUFanHeader.ForeColor = Color.DimGray;
+                    lblGPUFan.ForeColor = Color.DimGray;
                 }
+                lblGPUFan.Text = prevFanGPUPercentage + "%";
+                prgGPUFan.Width = (int)((prevFanGPUPercentage / 100.0) * (prgGPUFanContainer.Width - 4));
+            } else {
+                lblGPUTemp.Text = "Batt.";
+                lblGPUTemp.Font = openSans24;
+            }
 
             // Update the tray tooltip with current values.
             icoTray.Text = $"CPU\n  Temp: {currentCpuTemp}°\n  Fan: {prevFanCPUPercentage}%\n\nGPU\n" +
                            (currentGpuTemp > 20 ? $"  Temp: {currentGpuTemp}°\n  Fan: {prevFanGPUPercentage}%" : "  Asleep");
-            }
         }
 
         private void SetSliderValuesFromTable() {
@@ -485,6 +498,7 @@ namespace ClevoFanControl {
             fan?.SetFansAuto(2);
             fan?.Dispose();
             openSans24?.Dispose();
+            wmiTempSearcher?.Dispose();
             SaveFanTableAndConfig();
             Close();
             Application.Exit();
