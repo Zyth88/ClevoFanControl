@@ -1,7 +1,7 @@
 # Clevo Fan Control
 
 <p align="center">
-  <img src="https://i.ibb.co/KxQbYSC2/Clevo-Fan-Control-22-06-2026-07-47-45.png" alt="Clevo Fan Control Screenshot" />
+  <img src="https://i.ibb.co/cX3vr8tv/Photos-15-07-2026-20-02-07.png" alt="Clevo Fan Control Screenshot" />
 </p>
 
 A lightweight fan control utility for Clevo laptops.
