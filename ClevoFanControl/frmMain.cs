@@ -360,33 +360,41 @@ namespace ClevoFanControl {
 
         private void mnuProfileMax_Click(object sender, EventArgs e) {
             btnProfileMax.Checked = true;
+            SaveFanTableAndConfig();
         }
         private void mnuProfile50_Click(object sender, EventArgs e) {
             btnProfile50.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile30_Click(object sender, EventArgs e) {
             btnProfile30.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile60_Click(object sender, EventArgs e) {
             btnProfile60.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile70_Click(object sender, EventArgs e) {
             btnProfile70.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile40_Click(object sender, EventArgs e) {
             btnProfile40.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile80_Click(object sender, EventArgs e) {
             btnProfile80.Checked = true;
+            SaveFanTableAndConfig();
         }
 
         private void mnuProfile90_Click(object sender, EventArgs e) {
             btnProfile90.Checked = true;
+            SaveFanTableAndConfig();
         }
 
 
